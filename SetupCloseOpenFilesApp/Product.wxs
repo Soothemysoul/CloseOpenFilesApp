@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" >		
+	
+
+	<!--Id Нужно менять каждый раз при создании новой версии, номер версии меняется в 3 цифре-->
+	<Product Id="{6964B5B4-79BE-421E-A9A5-E9B6C7AA1858}"
+			 Name="CloseOpenFilesApp"
+			 Language="1049"
+			 Version="1.0.1.0"
+			 Manufacturer="VKo"
+			 UpgradeCode="{CB5F08F7-2D11-4B03-ADCE-ACF934D444D5}"
+			 Codepage="1251">
+
+
+		<Package
+			SummaryCodepage="1251"
+			InstallerVersion="200"
+			Compressed="yes"
+			InstallScope="perMachine" InstallPrivileges="elevated"/>
+
+		<MajorUpgrade DowngradeErrorMessage="Новая версия [ProductName] уже установлена." />
+		<!--<MajorUpgrade DowngradeErrorMessage="New version [ProductName] already installed." />-->
+		
+		<Media Id="1" Cabinet="cab1.cab" EmbedCab="yes"/>
+
+
+		<UI Id="WixUI_Minimal">
+			<TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+			<TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+			<TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+			<Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+			<Property Id="WixUI_Mode" Value="Minimal" />
+			<DialogRef Id="ErrorDlg" />
+			<DialogRef Id="FatalError" />
+			<DialogRef Id="FilesInUse" />
+			<DialogRef Id="MsiRMFilesInUse" />
+			<DialogRef Id="PrepareDlg" />
+			<DialogRef Id="ProgressDlg" />
+			<DialogRef Id="ResumeDlg" />
+			<DialogRef Id="UserExit" />
+			<DialogRef Id="WelcomeDlg" />
+			<Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="PrepareDlg">1</Publish>
+			<Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+			<Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+			<Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+			<Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+			<Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+			<Property Id="ARPNOMODIFY" Value="1" />
+		</UI>
+		<UIRef Id="WixUI_Common" />
+		<UIRef Id="WixUI_ErrorProgressText"/>
+
+		<Icon Id="open.ico" SourceFile="res\open.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="open.ico" />
+		
+
+		<Feature Id="ProductFeature" Title="CloseOpenFilesApp" Level="1">
+			<ComponentRef Id="ProductComponents" />
+			<ComponentRef Id="RegistryEntries" />
+		</Feature>
+
+
+	</Product>
+	<Fragment>
+		
+		
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="CloseOpenFilesApp">
+					<Component Id="RegistryEntries" Guid="{63920D97-A345-4EE8-A834-FBD03AD863D8}">
+						<RegistryValue
+								Root="HKCR"
+								Key="*\shell\CloseOpenFilesApp"
+								Name="MUIverb"
+								Type="string"
+								Value="Разблокировать файл">
+						</RegistryValue>
+						<RegistryValue
+								Root="HKCR"
+								Key="*\shell\CloseOpenFilesApp"
+								Name="Extended"
+								Type="string"
+								Value="">
+						</RegistryValue>
+						<RegistryValue
+								Root="HKCR"
+								Key="*\shell\CloseOpenFilesApp"
+								Name="Icon"
+								Type="string"
+								Value="[INSTALLFOLDER]CloseOpenFilesApp.exe">
+						</RegistryValue>
+						<RegistryValue Root="HKCR"
+								Key="*\shell\CloseOpenFilesApp\Command"
+								Value="&quot;[INSTALLFOLDER]CloseOpenFilesApp.exe&quot; &quot;%1&quot;"
+								Type="string"
+								Action="write">
+						</RegistryValue>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<DirectoryRef Id="INSTALLFOLDER">
+			<Component Id="ProductComponents" Guid="{521E4755-FE43-4762-9AF4-34F42E3CFA67}">
+				<File Id="UserPermissionsExe" Name="UsersPermissions.exe" Source="$(var.UsersPermissions.TargetDir)" DiskId="1"/>
+				<File Id="UserPermissionsConfiq" Name="UsersPermissions.exe.config" Source="$(var.UsersPermissions.TargetDir)" DiskId="1"/>
+				<File Id="UserPermissionsSetting" Name="UserSettings.xml" Source="$(var.CloseOpenFilesApp.TargetDir)" DiskId="1"/>
+				<File Id="CloseOpenFilesExe" Name="CloseOpenFilesApp.exe" Source="$(var.CloseOpenFilesApp.TargetDir)" DiskId="1"/>
+				<File Id="CloseOpenFilesConfiq" Name="CloseOpenFilesApp.exe.config" Source="$(var.CloseOpenFilesApp.TargetDir)" DiskId="1"/>
+				<File Id="Confiq" Name="confiq.ini" Source="$(var.CloseOpenFilesApp.TargetDir)" DiskId="1">
+					<Permission User="Пользователи" GenericRead="no" GenericExecute="no" GenericWrite="no" Delete="no" />
+					<Permission User="Администраторы" GenericAll="yes" />
+				</File>
+			</Component>
+		</DirectoryRef>
+
+
+	</Fragment>
+
+
+
+</Wix>
+
+
+
+
+
